@@ -7,3 +7,5 @@ django-admin startproject musicmood
 cd musicmood
 python manage.py startapp favorites
 python manage.py startapp tracks
+python manage.py makemigrations
+python manage.py migrate

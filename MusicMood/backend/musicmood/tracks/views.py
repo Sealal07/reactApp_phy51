@@ -40,7 +40,7 @@ def get_jamendo_tracks(tag=None, search_query=None):
         response = requests.get(JAMENDO_URL, params=params)
         response.raise_for_status()
         data = response.json()
-        if data.get['results']:
+        if data.get('results'):
             tracks = [
                 {
                     'track_id': track['id'],

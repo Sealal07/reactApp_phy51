@@ -10,6 +10,7 @@ class FavoriteTrack(models.Model):
     album_image = models.URLField()
 
     class Meta:
+        unique_together = ('user_id', 'track_id')
         verbose_name = 'Избранный трек'
         verbose_name_plural = 'Избранные треки'
     def __str__(self):
