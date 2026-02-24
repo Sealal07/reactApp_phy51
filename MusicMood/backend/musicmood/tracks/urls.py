@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import TracksListView, TimeOfDayView
+from .views import TrackListView, TimeOfDayTrackListView
 
 urlpatterns = [
-    path('tracks/', TracksListView.as_view(),
+    path('tracks/', TrackListView.as_view(),
          name='track-list'),
-    path('tracks/mood/', TimeOfDayView.as_view(),
+    path('tracks/mood/', TimeOfDayTrackListView.as_view(),
          name='time-of-day-tracks'),
 ]

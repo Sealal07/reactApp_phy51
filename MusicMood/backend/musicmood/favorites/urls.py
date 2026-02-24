@@ -1,7 +1,6 @@
 from django.urls import path
 from .views import FavoriteListView, FavoriteDeleteView
 
-
 urlpatterns = [
     path('favorites/', FavoriteListView.as_view(),
          name='favorite-list'),

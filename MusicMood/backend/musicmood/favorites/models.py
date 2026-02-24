@@ -14,4 +14,4 @@ class FavoriteTrack(models.Model):
         verbose_name = 'Избранный трек'
         verbose_name_plural = 'Избранные треки'
     def __str__(self):
-        return self.name_track 
+        return f'{self.name_track} by {self.artist_name} ({self.user_id})'

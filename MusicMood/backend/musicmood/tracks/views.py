@@ -1,3 +1,5 @@
+# tracks
+
 import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -5,7 +7,8 @@ from rest_framework import status
 from .functions import get_time_of_day
 from .config import JAMENDO_URL, JAMENDO_CLIENT_ID
 
-# словарь на теги
+# словарь на теги Jamendo
+
 MOOD_TAGS = {
     'joy': 'pop',
     'calm': 'chillout',
@@ -29,8 +32,8 @@ def get_jamendo_tracks(tag=None, search_query=None):
         'imagesize': 200,
     }
     if tag:
-        params['tag'] = tag
-        params['order']= 'popularity_week'
+        params['tags'] = tag
+        params['order'] = 'popularity_week'
 
     if search_query:
         params['search'] = search_query
@@ -40,6 +43,7 @@ def get_jamendo_tracks(tag=None, search_query=None):
         response = requests.get(JAMENDO_URL, params=params)
         response.raise_for_status()
         data = response.json()
+
         if data.get('results'):
             tracks = [
                 {
@@ -48,19 +52,21 @@ def get_jamendo_tracks(tag=None, search_query=None):
                     'artist_name': track['artist_name'],
                     'audio_url': track['audio'],
                     'album_image': track['image'],
-                } for track in data['results'] if track.get('audio')
+                }
+                for track in data['results']
+                if track.get('audio')
             ]
             return tracks
         return []
     except requests.exceptions.RequestException as e:
-        print(f'Jamendo API error: {e}')
+        print(f'jamendo API error: {e}')
         return []
-
 # POST /api/tracks/
-class TracksListView(APIView):
+class TrackListView(APIView):
     def post(self, request, *args, **kwargs):
-        search_query = request.data.get('search_query')
+        search_query = request.data.get('query')
         mood_name = request.data.get('mood')
+
         if search_query:
             tracks = get_jamendo_tracks(search_query=search_query)
             return Response(tracks, status=status.HTTP_200_OK)
@@ -70,15 +76,21 @@ class TracksListView(APIView):
             tracks = get_jamendo_tracks(tag=tag)
             return Response(tracks, status=status.HTTP_200_OK)
 
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Неверный запрос'},
+                         status = status.HTTP_400_BAD_REQUEST)
 
 # GET /api/tracks/mood/
-class TimeOfDayView(APIView):
+class TimeOfDayTrackListView(APIView):
     def get(self, request, *args, **kwargs):
         time_of_day = get_time_of_day()
         tag = TIME_TAGS.get(time_of_day)
+
         if tag:
             tracks = get_jamendo_tracks(tag=tag)
-            return Response(tracks, status=status.HTTP_200_OK)
-        return Response({'detail': 'не удалось определить время суток'},
+            return Response({'time_of_day': time_of_day,
+                             'tracks': tracks},
+                            status=status.HTTP_200_OK)
+        return Response({'detail': 'Не удалось определить время суток'},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
